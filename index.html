@@ -1,54 +1,84 @@
-# Génération du code HTML complet pour la série logique
-logic_sequence_html = """<!DOCTYPE html>
+# Génération d'un code HTML avec un design amélioré pour la série logique
+enhanced_logic_html = """<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Série Logique</title>
+    <title>Série Logique Améliorée</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
             text-align: center;
-            margin: 20px;
         }
         h1 {
-            color: #4CAF50;
+            margin-top: 20px;
+            font-size: 2.5rem;
+            color: #ffeaa7;
         }
         #timer {
-            font-weight: bold;
-            margin-bottom: 20px;
+            font-size: 1.2rem;
+            margin: 10px 0;
+            color: #fab1a0;
         }
         .container {
             display: flex;
-            justify-content: center;
-            gap: 20px;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
         }
-        .sequence, .choices {
+        .sequence {
             display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .choices {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 10px;
         }
         .sequence div, .choices div {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 2px solid #4CAF50;
-            border-radius: 5px;
-            font-size: 16px;
+            background-color: white;
+            color: #2d3436;
+            border: 3px solid #2ecc71;
+            border-radius: 10px;
+            font-size: 1.2rem;
             font-weight: bold;
+            cursor: pointer;
         }
         .sequence .empty {
-            background-color: #f0f0f0;
-            border-style: dashed;
+            border: 3px dashed #d63031;
+            background-color: #fdcb6e;
         }
         .buttons {
             margin-top: 20px;
         }
+        button {
+            background-color: #6c5ce7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #81ecec;
+        }
         #result {
             margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 1.5rem;
         }
     </style>
 </head>
@@ -56,7 +86,6 @@ logic_sequence_html = """<!DOCTYPE html>
     <h1>Complétez la série logique</h1>
     <div id="timer">Temps restant : 60s</div>
 
-    <!-- Conteneur principal -->
     <div class="container">
         <div class="sequence">
             <div>3</div>
@@ -113,7 +142,7 @@ logic_sequence_html = """<!DOCTYPE html>
             empty.ondrop = () => {
                 if (!empty.textContent) {
                     empty.textContent = draggedItem.textContent;
-                    empty.style.backgroundColor = "#ff6b6b";
+                    empty.style.backgroundColor = "#ff7675";
                 }
             };
         });
@@ -122,12 +151,12 @@ logic_sequence_html = """<!DOCTYPE html>
         document.getElementById("submit").onclick = () => {
             const correct = Array.from(empties).every(e => e.textContent === e.dataset.answer);
             result.textContent = correct ? "Bravo ! Série correcte." : "Erreur, essayez encore.";
-            result.style.color = correct ? "green" : "red";
+            result.style.color = correct ? "#2ecc71" : "#e74c3c";
         };
 
         // Reset
         document.getElementById("reset").onclick = () => {
-            empties.forEach(e => (e.textContent = "", e.style.backgroundColor = ""));
+            empties.forEach(e => (e.textContent = "", e.style.backgroundColor = "#fdcb6e"));
             result.textContent = "";
             timeRemaining = 60;
             timer.textContent = `Temps restant : 60s`;
@@ -138,8 +167,8 @@ logic_sequence_html = """<!DOCTYPE html>
 """
 
 # Sauvegarder dans un fichier index.html
-file_path_logic = "/mnt/data/index_logic.html"
-with open(file_path_logic, "w", encoding="utf-8") as file:
-    file.write(logic_sequence_html)
+file_path_enhanced = "/mnt/data/index_enhanced_logic.html"
+with open(file_path_enhanced, "w", encoding="utf-8") as file:
+    file.write(enhanced_logic_html)
 
-file_path_logic
+file_path_enhanced
