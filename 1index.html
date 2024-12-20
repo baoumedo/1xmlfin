@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Série Logique</title>
+    <title>Série Logique Améliorée</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -36,10 +36,19 @@
             border-radius: 5px;
             font-size: 16px;
             font-weight: bold;
+            cursor: pointer;
+            user-select: none;
         }
         .sequence .empty {
             background-color: #f0f0f0;
             border-style: dashed;
+        }
+        .choices div:hover {
+            background-color: #d9fdd9;
+        }
+        .empty.highlight {
+            border-color: #ffa500;
+            background-color: #fffacd;
         }
         .buttons {
             margin-top: 20px;
@@ -62,21 +71,22 @@
             <div>6</div>
             <div>12</div>
             <div>24</div>
-            <div class="empty" data-answer="48"></div>
-            <div class="empty" data-answer="96"></div>
+            <div class="empty" data-answer="48" aria-dropeffect="move"></div>
+            <div class="empty" data-answer="96" aria-dropeffect="move"></div>
             <div>192</div>
         </div>
 
         <div class="choices">
-            <div draggable="true">48</div>
-            <div draggable="true">96</div>
-            <div draggable="true">72</div>
-            <div draggable="true">36</div>
-            <div draggable="true">144</div>
+            <div draggable="true" aria-grabbed="false">48</div>
+            <div draggable="true" aria-grabbed="false">96</div>
+            <div draggable="true" aria-grabbed="false">72</div>
+            <div draggable="true" aria-grabbed="false">36</div>
+            <div draggable="true" aria-grabbed="false">144</div>
         </div>
     </div>
 
     <div class="buttons">
+        <button id="pause">Pause</button>
         <button id="reset">Réinitialiser</button>
         <button id="submit">Valider</button>
     </div>
@@ -88,31 +98,62 @@
         const empties = document.querySelectorAll(".empty");
         const result = document.getElementById("result");
         const timer = document.getElementById("timer");
-        let timeRemaining = 60,
-            draggedItem = null;
+        const pauseButton = document.getElementById("pause");
+        let timeRemaining = 60;
+        let isPaused = false;
+        let draggedItem = null;
 
         // Timer
-        const countdown = setInterval(() => {
-            if (--timeRemaining <= 0) {
-                clearInterval(countdown);
-                timer.textContent = "Temps écoulé !";
-            } else {
-                timer.textContent = `Temps restant : ${timeRemaining}s`;
-            }
-        }, 1000);
+        const startTimer = () => {
+            const countdown = setInterval(() => {
+                if (!isPaused) {
+                    timeRemaining--;
+                    if (timeRemaining <= 0) {
+                        clearInterval(countdown);
+                        timer.textContent = "Temps écoulé !";
+                        disableGame();
+                    } else {
+                        timer.textContent = `Temps restant : ${timeRemaining}s`;
+                    }
+                }
+            }, 1000);
+        };
+
+        // Toggle pause
+        pauseButton.addEventListener("click", () => {
+            isPaused = !isPaused;
+            pauseButton.textContent = isPaused ? "Reprendre" : "Pause";
+        });
+
+        // Disable game
+        const disableGame = () => {
+            choices.forEach(choice => (choice.draggable = false));
+            empties.forEach(empty => (empty.ondrop = null));
+        };
 
         // Drag & Drop
         choices.forEach(choice => {
-            choice.ondragstart = e => (draggedItem = e.target, e.dataTransfer.setData("text", e.target.textContent));
-            choice.ondragend = () => (draggedItem.style.display = "block");
+            choice.ondragstart = e => {
+                draggedItem = e.target;
+                draggedItem.setAttribute("aria-grabbed", "true");
+                e.dataTransfer.setData("text", e.target.textContent);
+            };
+            choice.ondragend = () => {
+                draggedItem.setAttribute("aria-grabbed", "false");
+            };
         });
 
         empties.forEach(empty => {
-            empty.ondragover = e => e.preventDefault();
+            empty.ondragover = e => {
+                e.preventDefault();
+                empty.classList.add("highlight");
+            };
+            empty.ondragleave = () => empty.classList.remove("highlight");
             empty.ondrop = () => {
                 if (!empty.textContent) {
                     empty.textContent = draggedItem.textContent;
                     empty.style.backgroundColor = "#ff6b6b";
+                    empty.classList.remove("highlight");
                 }
             };
         });
@@ -126,11 +167,16 @@
 
         // Reset
         document.getElementById("reset").onclick = () => {
-            empties.forEach(e => (e.textContent = "", e.style.backgroundColor = ""));
+            empties.forEach(e => (e.textContent = "", e.style.backgroundColor = "", e.classList.remove("highlight")));
             result.textContent = "";
             timeRemaining = 60;
+            isPaused = false;
             timer.textContent = `Temps restant : 60s`;
+            choices.forEach(choice => (choice.draggable = true));
         };
+
+        // Start the timer on page load
+        startTimer();
     </script>
 </body>
 </html>
