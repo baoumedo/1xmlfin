@@ -37,10 +37,11 @@ with open(file_path_enhanced, "w", encoding="utf-8") as file:
                 background-color: white;
                 color: #2d3436;
                 border: 3px solid #2ecc71;
-                border-radius: 50%; /* Rend les carreaux circulaires */
+                border-radius: 50%; /* Rend les éléments circulaires */
                 font-size: 1.2rem;
                 font-weight: bold;
                 cursor: pointer;
+                box-sizing: border-box; /* Assure une gestion correcte des dimensions */
             }
             .buttons, .navigation {
                 margin-top: 20px;
