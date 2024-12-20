@@ -1,150 +1,155 @@
-# Code HTML complet pour une série logique améliorée avec navigation et solutions
-file_path_enhanced = "/mnt/data/index_navigation_logic.html"
-with open(file_path_enhanced, "w", encoding="utf-8") as file:
-    enhanced_logic_html = """
-    <!DOCTYPE html>
-    <html lang="fr">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Séries Logiques Améliorées</title>
-        <style>
-            body {
-                font-family: 'Roboto', sans-serif;
-                margin: 0;
-                padding: 0;
-                background: linear-gradient(to right, #6a11cb, #2575fc);
-                color: white;
-                text-align: center;
-            }
-            h1 {
-                margin-top: 20px;
-                font-size: 2.5rem;
-                color: #ffeaa7;
-            }
-            .container {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                margin-top: 30px;
-            }
-            .sequence div, .choices div {
-                width: 60px;
-                height: 60px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                background-color: white;
-                color: #2d3436;
-                border: 3px solid #2ecc71;
-                border-radius: 50%; /* Assure que les éléments sont circulaires */
-                font-size: 1.2rem;
-                font-weight: bold;
-                cursor: pointer;
-                box-sizing: border-box;
-            }
-            .buttons, .navigation {
-                margin-top: 20px;
-            }
-            button {
-                background-color: #6c5ce7;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 5px;
-                cursor: pointer;
-            }
-            button:hover {
-                background-color: #81ecec;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>Complétez la Série Logique</h1>
-        <div id="timer">Temps restant : 60s</div>
-        <div class="container">
-            <div class="sequence" id="sequence">
-                <!-- Séquence générée dynamiquement -->
-            </div>
-            <div class="choices" id="choices">
-                <!-- Options dynamiques -->
-            </div>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Séries Logiques Améliorées</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 20px;
+            font-size: 2.5rem;
+            color: #ffeaa7;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+        .sequence {
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* Ajoute un espacement horizontal */
+        }
+        .choices {
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* Ajoute un espacement horizontal */
+            flex-wrap: wrap;
+        }
+        .sequence div, .choices div {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            color: #2d3436;
+            border: 3px solid #2ecc71;
+            border-radius: 50%; /* Assure que les éléments sont circulaires */
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+        .buttons, .navigation {
+            margin-top: 20px;
+        }
+        button {
+            background-color: #6c5ce7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #81ecec;
+        }
+    </style>
+</head>
+<body>
+    <h1>Complétez la Série Logique</h1>
+    <div id="timer">Temps restant : 60s</div>
+    <div class="container">
+        <div class="sequence" id="sequence">
+            <!-- Séquence générée dynamiquement -->
         </div>
-        <div class="buttons">
-            <button id="reset">Réinitialiser</button>
-            <button id="submit">Valider</button>
-            <button id="show-solution">Afficher la solution</button>
+        <div class="choices" id="choices">
+            <!-- Options dynamiques -->
         </div>
-        <div id="result"></div>
-        <div class="navigation">
-            <button id="previous">Précédent</button>
-            <button id="next">Suivant</button>
-        </div>
-        <script>
-            const seriesData = {
-                1: {
-                    sequence: [3, 6, 12, 24, null, null, 192],
-                    answers: [48, 96],
-                    options: [48, 96, 72, 36, 144]
-                },
-                2: {
-                    sequence: [1, 4, 7, 10, null, null, 19],
-                    answers: [13, 16],
-                    options: [13, 16, 12, 20, 22]
+    </div>
+    <div class="buttons">
+        <button id="reset">Réinitialiser</button>
+        <button id="submit">Valider</button>
+        <button id="show-solution">Afficher la solution</button>
+    </div>
+    <div id="result"></div>
+    <div class="navigation">
+        <button id="previous">Précédent</button>
+        <button id="next">Suivant</button>
+    </div>
+    <script>
+        const seriesData = {
+            1: {
+                sequence: [3, 6, 12, 24, null, null, 192],
+                answers: [48, 96],
+                options: [48, 96, 72, 36, 144]
+            },
+            2: {
+                sequence: [1, 4, 7, 10, null, null, 19],
+                answers: [13, 16],
+                options: [13, 16, 12, 20, 22]
+            }
+        };
+
+        let currentSeries = 1;
+        const sequenceContainer = document.getElementById("sequence");
+        const choicesContainer = document.getElementById("choices");
+        const result = document.getElementById("result");
+        const timer = document.getElementById("timer");
+        let timeRemaining = 60;
+
+        // Charger une série
+        function loadSeries(seriesId) {
+            sequenceContainer.innerHTML = "";
+            choicesContainer.innerHTML = "";
+            const series = seriesData[seriesId];
+
+            series.sequence.forEach(num => {
+                const div = document.createElement("div");
+                if (num === null) {
+                    div.className = "empty";
+                    div.dataset.answer = series.answers.shift();
+                } else {
+                    div.textContent = num;
                 }
-            };
+                sequenceContainer.appendChild(div);
+            });
 
-            let currentSeries = 1;
-            const sequenceContainer = document.getElementById("sequence");
-            const choicesContainer = document.getElementById("choices");
-            const result = document.getElementById("result");
-            const timer = document.getElementById("timer");
-            let timeRemaining = 60;
+            series.options.forEach(option => {
+                const div = document.createElement("div");
+                div.textContent = option;
+                div.setAttribute("draggable", true);
+                div.ondragstart = e => e.dataTransfer.setData("text", e.target.textContent);
+                div.ondragend = () => div.style.display = "block";
+                choicesContainer.appendChild(div);
+            });
+        }
 
-            // Charger une série
-            function loadSeries(seriesId) {
-                sequenceContainer.innerHTML = "";
-                choicesContainer.innerHTML = "";
-                const series = seriesData[seriesId];
+        // Chronomètre
+        function startTimer() {
+            const countdown = setInterval(() => {
+                if (--timeRemaining <= 0) {
+                    clearInterval(countdown);
+                    timer.textContent = "Temps écoulé !";
+                } else {
+                    timer.textContent = `Temps restant : ${timeRemaining}s`;
+                }
+            }, 1000);
+        }
 
-                series.sequence.forEach(num => {
-                    const div = document.createElement("div");
-                    if (num === null) {
-                        div.className = "empty";
-                        div.dataset.answer = series.answers.shift();
-                    } else {
-                        div.textContent = num;
-                    }
-                    sequenceContainer.appendChild(div);
-                });
-
-                series.options.forEach(option => {
-                    const div = document.createElement("div");
-                    div.textContent = option;
-                    div.setAttribute("draggable", true);
-                    div.ondragstart = e => e.dataTransfer.setData("text", e.target.textContent);
-                    div.ondragend = () => div.style.display = "block";
-                    choicesContainer.appendChild(div);
-                });
-            }
-
-            // Chronomètre
-            function startTimer() {
-                const countdown = setInterval(() => {
-                    if (--timeRemaining <= 0) {
-                        clearInterval(countdown);
-                        timer.textContent = "Temps écoulé !";
-                    } else {
-                        timer.textContent = `Temps restant : ${timeRemaining}s`;
-                    }
-                }, 1000);
-            }
-
-            // Initialiser la série et le chronomètre
-            loadSeries(currentSeries);
-            startTimer();
-        </script>
-    </body>
-    </html>
-    """
-    file.write(enhanced_logic_html)
+        // Initialiser la série et le chronomètre
+        loadSeries(currentSeries);
+        startTimer();
+    </script>
+</body>
+</html>
