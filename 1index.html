@@ -9,9 +9,12 @@
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 20px;
+            background: linear-gradient(to bottom, #6a11cb, #2575fc);
+            color: #fff;
         }
         h1 {
-            color: #4CAF50;
+            font-size: 2.5em;
+            margin-bottom: 20px;
         }
         #timer {
             font-weight: bold;
@@ -21,10 +24,12 @@
             display: flex;
             justify-content: center;
             gap: 20px;
+            flex-wrap: wrap;
         }
         .sequence, .choices {
             display: flex;
             gap: 10px;
+            justify-content: center;
         }
         .sequence div, .choices div {
             width: 50px;
@@ -32,26 +37,34 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 2px solid #4CAF50;
-            border-radius: 5px;
+            border: 2px solid #fff;
+            border-radius: 50%;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            user-select: none;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            transition: transform 0.2s, background-color 0.2s;
         }
         .sequence .empty {
-            background-color: #f0f0f0;
+            background-color: rgba(255, 255, 255, 0.1);
             border-style: dashed;
         }
         .choices div:hover {
-            background-color: #d9fdd9;
+            transform: scale(1.1);
+            background-color: rgba(255, 255, 255, 0.5);
         }
-        .empty.highlight {
-            border-color: #ffa500;
-            background-color: #fffacd;
+        .empty.correct {
+            background-color: #00ff7f;
+        }
+        .empty.incorrect {
+            background-color: #ff6347;
         }
         .buttons {
             margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
         }
         #result {
             margin-top: 20px;
@@ -61,7 +74,7 @@
     </style>
 </head>
 <body>
-    <h1>Complétez la série logique</h1>
+    <h1>Complétez la Série Logique</h1>
     <div id="timer">Temps restant : 60s</div>
 
     <!-- Conteneur principal -->
@@ -71,89 +84,72 @@
             <div>6</div>
             <div>12</div>
             <div>24</div>
-            <div class="empty" data-answer="48" aria-dropeffect="move"></div>
-            <div class="empty" data-answer="96" aria-dropeffect="move"></div>
+            <div class="empty" data-answer="48"></div>
+            <div class="empty" data-answer="96"></div>
             <div>192</div>
         </div>
 
         <div class="choices">
-            <div draggable="true" aria-grabbed="false">48</div>
-            <div draggable="true" aria-grabbed="false">96</div>
-            <div draggable="true" aria-grabbed="false">72</div>
-            <div draggable="true" aria-grabbed="false">36</div>
-            <div draggable="true" aria-grabbed="false">144</div>
+            <div draggable="true">48</div>
+            <div draggable="true">96</div>
+            <div draggable="true">72</div>
+            <div draggable="true">36</div>
+            <div draggable="true">144</div>
         </div>
     </div>
 
     <div class="buttons">
-        <button id="pause">Pause</button>
         <button id="reset">Réinitialiser</button>
         <button id="submit">Valider</button>
+        <button id="showSolution">Afficher la solution</button>
     </div>
 
     <div id="result"></div>
+
+    <audio id="successSound" src="https://www.fesliyanstudios.com/play-mp3/387" preload="auto"></audio>
+    <audio id="errorSound" src="https://www.fesliyanstudios.com/play-mp3/332" preload="auto"></audio>
 
     <script>
         const choices = document.querySelectorAll(".choices div");
         const empties = document.querySelectorAll(".empty");
         const result = document.getElementById("result");
         const timer = document.getElementById("timer");
-        const pauseButton = document.getElementById("pause");
+        const successSound = document.getElementById("successSound");
+        const errorSound = document.getElementById("errorSound");
         let timeRemaining = 60;
-        let isPaused = false;
         let draggedItem = null;
 
         // Timer
-        const startTimer = () => {
-            const countdown = setInterval(() => {
-                if (!isPaused) {
-                    timeRemaining--;
-                    if (timeRemaining <= 0) {
-                        clearInterval(countdown);
-                        timer.textContent = "Temps écoulé !";
-                        disableGame();
-                    } else {
-                        timer.textContent = `Temps restant : ${timeRemaining}s`;
-                    }
-                }
-            }, 1000);
-        };
-
-        // Toggle pause
-        pauseButton.addEventListener("click", () => {
-            isPaused = !isPaused;
-            pauseButton.textContent = isPaused ? "Reprendre" : "Pause";
-        });
-
-        // Disable game
-        const disableGame = () => {
-            choices.forEach(choice => (choice.draggable = false));
-            empties.forEach(empty => (empty.ondrop = null));
-        };
+        const countdown = setInterval(() => {
+            timeRemaining--;
+            if (timeRemaining <= 0) {
+                clearInterval(countdown);
+                timer.textContent = "Temps écoulé !";
+                disableGame();
+            } else {
+                timer.textContent = `Temps restant : ${timeRemaining}s`;
+            }
+        }, 1000);
 
         // Drag & Drop
         choices.forEach(choice => {
             choice.ondragstart = e => {
                 draggedItem = e.target;
-                draggedItem.setAttribute("aria-grabbed", "true");
                 e.dataTransfer.setData("text", e.target.textContent);
-            };
-            choice.ondragend = () => {
-                draggedItem.setAttribute("aria-grabbed", "false");
             };
         });
 
         empties.forEach(empty => {
-            empty.ondragover = e => {
-                e.preventDefault();
-                empty.classList.add("highlight");
-            };
-            empty.ondragleave = () => empty.classList.remove("highlight");
+            empty.ondragover = e => e.preventDefault();
             empty.ondrop = () => {
                 if (!empty.textContent) {
                     empty.textContent = draggedItem.textContent;
-                    empty.style.backgroundColor = "#ff6b6b";
-                    empty.classList.remove("highlight");
+                    empty.classList.add(
+                        draggedItem.textContent === empty.dataset.answer
+                            ? "correct"
+                            : "incorrect"
+                    );
+                    (draggedItem.textContent === empty.dataset.answer ? successSound : errorSound).play();
                 }
             };
         });
@@ -165,18 +161,32 @@
             result.style.color = correct ? "green" : "red";
         };
 
-        // Reset
+        // Réinitialiser
         document.getElementById("reset").onclick = () => {
-            empties.forEach(e => (e.textContent = "", e.style.backgroundColor = "", e.classList.remove("highlight")));
+            empties.forEach(e => {
+                e.textContent = "";
+                e.classList.remove("correct", "incorrect");
+            });
             result.textContent = "";
             timeRemaining = 60;
-            isPaused = false;
-            timer.textContent = `Temps restant : 60s`;
-            choices.forEach(choice => (choice.draggable = true));
+            timer.textContent = "Temps restant : 60s";
         };
 
-        // Start the timer on page load
-        startTimer();
+        // Afficher la solution
+        document.getElementById("showSolution").onclick = () => {
+            empties.forEach(e => {
+                e.textContent = e.dataset.answer;
+                e.classList.add("correct");
+            });
+            result.textContent = "Voici la solution !";
+            result.style.color = "blue";
+        };
+
+        // Désactiver le jeu
+        function disableGame() {
+            choices.forEach(choice => (choice.draggable = false));
+            empties.forEach(empty => (empty.ondrop = null));
+        }
     </script>
 </body>
 </html>
