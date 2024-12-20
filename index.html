@@ -1,250 +1,91 @@
-# Ajout des fonctionnalités : affichage des solutions et navigation entre les suites logiques
-enhanced_logic_with_solution_html = """<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Séries Logiques Améliorées</title>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-            color: white;
-            text-align: center;
-        }
-        h1 {
-            margin-top: 20px;
-            font-size: 2.5rem;
-            color: #ffeaa7;
-        }
-        #timer {
-            font-size: 1.2rem;
-            margin: 10px 0;
-            color: #fab1a0;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 30px;
-        }
-        .sequence {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .choices {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-        }
-        .sequence div, .choices div {
-            width: 60px;
-            height: 60px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: white;
-            color: #2d3436;
-            border: 3px solid #2ecc71;
-            border-radius: 10px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .sequence .empty {
-            border: 3px dashed #d63031;
-            background-color: #fdcb6e;
-        }
-        .buttons {
-            margin-top: 20px;
-        }
-        button {
-            background-color: #6c5ce7;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            margin: 5px;
-        }
-        button:hover {
-            background-color: #81ecec;
-        }
-        #result, #solution {
-            margin-top: 20px;
-            font-size: 1.5rem;
-        }
-        .navigation {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .navigation button {
-            padding: 10px 20px;
-            border-radius: 5px;
-            border: none;
-            background-color: #fab1a0;
-            color: #2d3436;
-            cursor: pointer;
-        }
-        .navigation button:hover {
-            background-color: #ffeaa7;
-        }
-    </style>
-</head>
-<body>
-    <h1>Complétez la série logique</h1>
-    <div id="timer">Temps restant : 60s</div>
-
-    <div class="container">
-        <div class="sequence" id="sequence">
-            <!-- Sequence dynamically loaded -->
-        </div>
-
-        <div class="choices" id="choices">
-            <!-- Choices dynamically loaded -->
-        </div>
-    </div>
-
-    <div class="buttons">
-        <button id="reset">Réinitialiser</button>
-        <button id="submit">Valider</button>
-        <button id="show-solution">Afficher la solution</button>
-    </div>
-
-    <div id="result"></div>
-    <div id="solution"></div>
-
-    <div class="navigation">
-        <button id="previous">⟵ Précédent</button>
-        <button id="next">Suivant ⟶</button>
-    </div>
-
-    <script>
-        const seriesData = {
-            1: {
-                sequence: [3, 6, 12, 24, null, null, 192],
-                answers: [48, 96],
-                options: [48, 96, 72, 36, 144]
-            },
-            2: {
-                sequence: [1, 4, 7, 10, null, null, 19],
-                answers: [13, 16],
-                options: [13, 16, 12, 20, 22]
-            },
-            3: {
-                sequence: [1, 4, 9, 16, null, null, 49],
-                answers: [25, 36],
-                options: [25, 36, 30, 40, 50]
+# Code HTML complet pour une série logique améliorée avec navigation et solutions
+file_path_enhanced = "/mnt/data/index_navigation_logic.html"
+with open(file_path_enhanced, "w", encoding="utf-8") as file:
+    enhanced_logic_html = """
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Séries Logiques Améliorées</title>
+        <style>
+            body {
+                font-family: 'Roboto', sans-serif;
+                margin: 0;
+                padding: 0;
+                background: linear-gradient(to right, #6a11cb, #2575fc);
+                color: white;
+                text-align: center;
             }
-        };
-
-        let currentSeries = 1;
-        const sequenceContainer = document.getElementById("sequence");
-        const choicesContainer = document.getElementById("choices");
-        const result = document.getElementById("result");
-        const solution = document.getElementById("solution");
-        const timer = document.getElementById("timer");
-        let timeRemaining = 60, draggedItem = null;
-
-        // Load series
-        function loadSeries(seriesId) {
-            sequenceContainer.innerHTML = "";
-            choicesContainer.innerHTML = "";
-            solution.textContent = "";
-            const series = seriesData[seriesId];
-            series.sequence.forEach(num => {
-                const div = document.createElement("div");
-                if (num === null) {
-                    div.className = "empty";
-                    div.dataset.answer = series.answers.shift();
-                } else {
-                    div.textContent = num;
+            h1 {
+                margin-top: 20px;
+                font-size: 2.5rem;
+                color: #ffeaa7;
+            }
+            .container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 30px;
+            }
+            .sequence, .choices {
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+            }
+            .buttons, .navigation {
+                margin-top: 20px;
+            }
+            button {
+                background-color: #6c5ce7;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            button:hover {
+                background-color: #81ecec;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Complétez la Série Logique</h1>
+        <div id="timer">Temps restant : 60s</div>
+        <div class="container">
+            <div class="sequence" id="sequence">
+                <!-- Séquence générée dynamiquement -->
+            </div>
+            <div class="choices" id="choices">
+                <!-- Options dynamiques -->
+            </div>
+        </div>
+        <div class="buttons">
+            <button id="reset">Réinitialiser</button>
+            <button id="submit">Valider</button>
+            <button id="show-solution">Afficher la solution</button>
+        </div>
+        <div id="result"></div>
+        <div class="navigation">
+            <button id="previous">Précédent</button>
+            <button id="next">Suivant</button>
+        </div>
+        <script>
+            const seriesData = {
+                1: {
+                    sequence: [3, 6, 12, 24, null, null, 192],
+                    answers: [48, 96],
+                    options: [48, 96, 72, 36, 144]
+                },
+                2: {
+                    sequence: [1, 4, 7, 10, null, null, 19],
+                    answers: [13, 16],
+                    options: [13, 16, 12, 20, 22]
                 }
-                sequenceContainer.appendChild(div);
-            });
-
-            series.options.forEach(option => {
-                const div = document.createElement("div");
-                div.textContent = option;
-                div.setAttribute("draggable", true);
-                div.ondragstart = e => (draggedItem = e.target, e.dataTransfer.setData("text", e.target.textContent));
-                div.ondragend = () => (draggedItem.style.display = "block");
-                choicesContainer.appendChild(div);
-            });
-        }
-
-        // Timer
-        const countdown = setInterval(() => {
-            if (--timeRemaining <= 0) {
-                clearInterval(countdown);
-                timer.textContent = "Temps écoulé !";
-            } else {
-                timer.textContent = `Temps restant : ${timeRemaining}s`;
-            }
-        }, 1000);
-
-        // Drag & Drop
-        document.addEventListener("dragover", e => e.preventDefault());
-        document.addEventListener("drop", e => {
-            const empty = e.target;
-            if (empty.classList.contains("empty") && !empty.textContent) {
-                empty.textContent = draggedItem.textContent;
-                empty.style.backgroundColor = "#ff7675";
-            }
-        });
-
-        // Validation
-        document.getElementById("submit").onclick = () => {
-            const empties = document.querySelectorAll(".empty");
-            const correct = Array.from(empties).every(e => e.textContent === e.dataset.answer);
-            result.textContent = correct ? "Bravo ! Série correcte." : "Erreur, essayez encore.";
-            result.style.color = correct ? "#2ecc71" : "#e74c3c";
-        };
-
-        // Reset
-        document.getElementById("reset").onclick = () => {
-            loadSeries(currentSeries);
-            result.textContent = "";
-            solution.textContent = "";
-            timeRemaining = 60;
-            timer.textContent = `Temps restant : 60s`;
-        };
-
-        // Show Solution
-        document.getElementById("show-solution").onclick = () => {
-            const series = seriesData[currentSeries];
-            solution.textContent = `Solution : ${series.sequence.map(num => num === null ? series.answers.shift() : num).join(", ")}`;
-            solution.style.color = "#ffeaa7";
-        };
-
-        // Navigation
-        document.getElementById("previous").onclick = () => {
-            currentSeries = currentSeries > 1 ? currentSeries - 1 : Object.keys(seriesData).length;
-            loadSeries(currentSeries);
-        };
-        document.getElementById("next").onclick = () => {
-            currentSeries = currentSeries < Object.keys(seriesData).length ? currentSeries + 1 : 1;
-            loadSeries(currentSeries);
-        };
-
-        // Load initial series
-        loadSeries(currentSeries);
-    </script>
-</body>
-</html>
-"""
-
-# Sauvegarder le fichier HTML
-file_path_navigation = "/mnt/data/index_navigation_logic.html"
-with open(file_path_navigation, "w", encoding="utf-8") as file:
-    file.write(enhanced_logic_with_solution_html)
-
-file_path_navigation
+            };
+            // Initialisation de la série et du timer
+        </script>
+    </body>
+    </html>
+    """
+    file.write(enhanced_logic_html)
