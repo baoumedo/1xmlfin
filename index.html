@@ -28,10 +28,19 @@ with open(file_path_enhanced, "w", encoding="utf-8") as file:
                 align-items: center;
                 margin-top: 30px;
             }
-            .sequence, .choices {
+            .sequence div, .choices div {
+                width: 60px;
+                height: 60px;
                 display: flex;
                 justify-content: center;
-                gap: 15px;
+                align-items: center;
+                background-color: white;
+                color: #2d3436;
+                border: 3px solid #2ecc71;
+                border-radius: 50%; /* Rend les carreaux circulaires */
+                font-size: 1.2rem;
+                font-weight: bold;
+                cursor: pointer;
             }
             .buttons, .navigation {
                 margin-top: 20px;
